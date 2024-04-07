@@ -1,43 +1,57 @@
+package site.ycsb.db;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class HttpClient {
-    public static void main(String[] args) {
-        String serverUrl = "http://40.80.84.73:8080";
+    private ArrayList<String> hostnames;
 
-        // Send HTTP PUT request
-        sendPutRequest(serverUrl, "hello=world");
-        sendPutRequest(serverUrl, "swapnil=tatiya");
-        sendPutRequest(serverUrl, "amit=pandit");
-
-        // Send HTTP GET request
-        sendGetRequest(serverUrl, "hello");
-
-        // Send HTTP DELETE request
-        sendDeleteRequest(serverUrl, "hue");
-
-        // Send HTTP GET request
-        sendGetRequest(serverUrl, "hello");
+    public HttpClient(ArrayList<String> hostnames) {
+        this.hostnames = hostnames;
     }
 
-    private static void sendGetRequest(String serverUrl, String data) {
+    private String getRandomServerUrl() {
+        Random random = new Random();
+        int index = random.nextInt(hostnames.size());
+        return hostnames.get(index);
+    }
+
+    public String sendGetRequest(String data) {
+        String serverUrl = getRandomServerUrl();
+        return sendRequest("GET", serverUrl, data);
+    }
+
+    public String sendPutRequest(String data) {
+        String serverUrl = getRandomServerUrl();
+        return sendRequest("PUT", serverUrl, data);
+    }
+
+    public String sendDeleteRequest(String data) {
+        String serverUrl = getRandomServerUrl();
+        return sendRequest("DELETE", serverUrl, data);
+    }
+
+    private String sendRequest(String method, String serverUrl, String data) {
         try {
             URL url = new URL(serverUrl);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
+            connection.setRequestMethod(method);
             connection.setDoOutput(true);
 
+            // Send data in request
             OutputStream outputStream = connection.getOutputStream();
             outputStream.write(data.getBytes());
             outputStream.flush();
             outputStream.close();
 
             int responseCode = connection.getResponseCode();
-            System.out.println("GET Response Code: " + responseCode);
+            System.out.println(method + " Response Code: " + responseCode);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String response;
@@ -45,75 +59,31 @@ public class HttpClient {
             while ((response = reader.readLine()) != null) {
                 responseData.append(response);
             }
+
             reader.close();
-
-            System.out.println("GET Response Data: " + responseData.toString());
-
             connection.disconnect();
+            return responseData.toString();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void sendPutRequest(String serverUrl, String data) {
-        try {
-            URL url = new URL(serverUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("PUT");
-            connection.setDoOutput(true);
+//    public static void main(String[] args) {
+//        String serverUrl = "http://40.80.84.73:8080";
+//
+//        // Send HTTP PUT request
+//        sendPutRequest(serverUrl, "hello=world");
+//        sendPutRequest(serverUrl, "swapnil=tatiya");
+//        sendPutRequest(serverUrl, "amit=pandit");
+//
+//        // Send HTTP GET request
+//        sendGetRequest(serverUrl, "hello");
+//
+//        // Send HTTP DELETE request
+//        sendDeleteRequest(serverUrl, "hue");
+//
+//        // Send HTTP GET request
+//        sendGetRequest(serverUrl, "hello");
+//    }
 
-            OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(data.getBytes());
-            outputStream.flush();
-            outputStream.close();
-
-            int responseCode = connection.getResponseCode();
-            System.out.println("PUT Response Code: " + responseCode);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String response;
-            StringBuilder responseData = new StringBuilder();
-            while ((response = reader.readLine()) != null) {
-                responseData.append(response);
-            }
-            reader.close();
-
-            System.out.println("PUT Response Data: " + responseData.toString());
-
-            connection.disconnect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void sendDeleteRequest(String serverUrl, String data) {
-        try {
-            URL url = new URL(serverUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("DELETE");
-            connection.setDoOutput(true);
-
-            OutputStream outputStream = connection.getOutputStream();
-            outputStream.write(data.getBytes());
-            outputStream.flush();
-            outputStream.close();
-
-            int responseCode = connection.getResponseCode();
-            System.out.println("DELETE Response Code: " + responseCode);
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String response;
-            StringBuilder responseData = new StringBuilder();
-            while ((response = reader.readLine()) != null) {
-                responseData.append(response);
-            }
-            reader.close();
-
-            System.out.println("DELETE Response Data: " + responseData.toString());
-
-            connection.disconnect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }
