@@ -15,28 +15,26 @@ mvn -pl site.ycsb:balancedb-binding -am clean package
 If you want to interact with the system manually instead of running a workload,
 execute the following command:
 ```bash
-./bin/ycsb shell balancedb -p balance.hosts=IP1[,IP2,IP3...] [-p balance.port=8080]
+./bin/ycsb shell balancedb -p balance.hosts=IP1:PORT1[,IP2:PORT2,IP3:PORT3...] 
 ```
 
 ## 5. Provide connection parameters
 Set hosts, and port in the workload you plan to run.
 - `balance.hosts`: a comma separated list of http-enabled BalanceDB server
-hostnames/IP addresses.
-- `balance.port`: the port on which all these servers are listening for HTTP
-requests.
+hostnames/IP addresses and ports.
 
 Alternatively, set configs with the following shell command:
 ```bash
-./bin/ycsb load balancedb -s -P workloads/workloada -p "balance.hosts=127.0.0.1" -p "balance.port=8080" > outputLoad.txt
+./bin/ycsb load balancedb -s -P workloads/workloada -p "balance.hosts=127.0.0.1:8080" > outputLoad.txt
 ```
 
 ## 6. Load data and run tests
 Load the data:
 ```bash
-./bin/ycsb load balancedb -s -P workloads/workloada > outputLoad.txt
+./bin/ycsb load balancedb -s -P workloads/workloada -p "balance.hosts=127.0.0.1:8080" > outputLoad.txt
 ```
 
 Run the workload test:
 ```bash
-./bin/ycsb run balancedb -s -P workloads/workloada > outputRun.txt
+./bin/ycsb run balancedb -s -P workloads/workloada -p "balance.hosts=127.0.0.1:8080" > outputRun.txt
 ```

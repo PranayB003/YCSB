@@ -40,7 +40,8 @@ public class BalanceDBClient extends DB {
     // Append port to all IP addresses
     for (int i = 0; i < ipAddressList.size(); i++) {
       String ipAddress = ipAddressList.get(i);
-      ipAddressList.set(i, "http://" + ipAddress + ":" + port);
+      //ipAddressList.set(i, "http://" + ipAddress + ":" + port);
+      ipAddressList.set(i, "http://" + ipAddress);
     }
 
     client = new HttpClient(ipAddressList);
@@ -136,7 +137,8 @@ public class BalanceDBClient extends DB {
   public Status scan(String table, String startkey, int recordcount,
       Set<String> fields, Vector<HashMap<String, ByteIterator>> result) {
     // Get list of keys to perform read on
-    // Performing a read for all those keys
+//    String res = client.sendGetRequest("__KEY_RANGE__,".append(startKey).append(recordCount));
+//    String[] keys = res.split(",");
 //    HashMap<String, ByteIterator> values;
 //    for (String key : keys) {
 //        values = new HashMap<String, ByteIterator>();
